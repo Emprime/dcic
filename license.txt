@@ -1,0 +1,369 @@
+The data-centric image classification benchmark also referred to as DCIC is multi-domain benchmark for noisy and ambiguous label estimation.
+The benchmark consists of firstly the provided source code for the baseline methods, evaluation protocols, meta data, documentation all all other files in this repository (referred to as benchmark source code) and secondly the datasets including images and annotations itself (referred to as benchmark datasets).
+
+This work was originally created in
+
+Schmarje, L., Grossmann, V., Zelenka, C., Dippel, S., Kiko, R., Oszust, M., Pastell,
+M., Stracke, J., Valros, A., Volkmann, N., Koch, R.: Is one annotation enough? A
+data-centric image classification benchmark for noisy and ambiguous label estima-
+tion. 36th Conference on Neural Information Processing Systems (NeurIPS 2022)
+Track on Datasets and Benchmarks (2022)
+
+This work is referenced below as original benchmark paper.
+
+The benchmark repository is published under Creative Commons BY-SA 4.0 license.
+You can use, redistribute, and adapt it for non-commercial and commercial purposes,
+as long as you (a) give appropriate credit by citing our paper,
+(b) indicate any changes that you've made, and
+(c) distribute any derivative works under the same license.
+
+Full license information at https://creativecommons.org/licenses/by-sa/4.0/
+
+
+The benchmark datasets are published under different licenses per subset.
+
+# Benthic is published under Creative Commons BY-SA 4.0 license.
+
+The original data was created by
+
+T Schoening, A Purser, D Langenkämper, I Suck, J Taylor, D Cuvelier, L Lins, E Simon-
+Lledó, Y Marcon, D O B Jones, T Nattkemper, K Köser, M Zurowietz, J Greinert, and
+J Gomes-Pereira. Megafauna community assessment of polymetallic-nodule fields with cameras:
+platform and methodology comparison. Biogeosciences, 17(12):3115–3133, 2020. doi: 10.5194/bg-17-3115-2020
+
+and
+
+Daniel Langenkämper, Robin van Kevelaer, Autun Purser, and Tim W Nattkemper. Gear-
+Induced Concept Drift in Marine Images and Its Effect on Deep Learning Classification.
+Frontiers in Marine Science, 7, 2020. ISSN 2296-7745. doi: 10.3389/fmars.2020.0050
+
+The data was adapted by the original benchmark paper and is available at https://doi.org/10.5281/zenodo.7152309
+
+# CIFAR-10H is already published at https://github.com/jcpeterson/cifar-10h under Creative Commons BY-NC-SA 4.0 license.
+
+Full license information at  https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+The CIFAR-10 image and original label data can be found at:
+https://www.cs.toronto.edu/~kriz/cifar.html
+
+The data was reformatted for this benchmark and is republished under Creative Commons BY-NC-SA 4.0 license.
+
+The updated data is available at https://doi.org/10.5281/zenodo.7152309
+
+# MiceBone is published under Creative Commons BY-SA 4.0 license.
+
+The original data was published at https://doi.org/10.5281/zenodo.3355937 under the Creative Commons BY 4.0 licence by
+
+Schmarje, L., Zelenka, C., Geisen, U., Glüer, CC., Koch, R. (2019).
+2D and 3D Segmentation of Uncertain Local Collagen Fiber Orientations in SHG Microscopy.
+In: Pattern Recognition. DAGM GCPR 2019. Lecture Notes in Computer Science vol 11824. Springer
+https://doi.org/10.1007/978-3-030-33676-9_26
+
+Full license information at  https://creativecommons.org/licenses/by/4.0/
+
+The data was adapted by
+
+Lars Schmarje, Monty Santarossa, Simon-Martin Schröder, Claudius Zelenka, Rainer Kiko,
+Jenny Stracke, Nina Volkmann, and Reinhard Koch. A data-centric approach for improving
+ambiguous labels with combined semi-supervised classification and clustering. Proceedings of
+the European Conference on Computer Vision (ECCV), 2022
+
+and the original benchmark paper and is available at https://doi.org/10.5281/zenodo.7152309
+
+# Pig is published under Creative Commons BY-SA 4.0 license.
+
+The data was created by the original benchmark paper and is available at https://doi.org/10.5281/zenodo.7152309
+
+
+# Plankton is published under Creative Commons BY-SA 4.0 license.
+
+The original data was published at https://doi.org/10.5281/zenodo.5578454 under the Creative Commons BY 4.0 licence by
+
+Lars Schmarje, Johannes Brünger, Monty Santarossa, Simon-Martin Schröder, Rainer Kiko,
+and Reinhard Koch. Fuzzy overclustering: Semi-supervised classification of fuzzy labels
+with overclustering and inverse cross-entropy. Sensors, 21(19), 2021. ISSN 1424-8220.
+doi: 10.3390/s2119666
+
+Full license information at  https://creativecommons.org/licenses/by/4.0/
+
+The data was adapted by
+
+Lars Schmarje, Monty Santarossa, Simon-Martin Schröder, Claudius Zelenka, Rainer Kiko,
+Jenny Stracke, Nina Volkmann, and Reinhard Koch. A data-centric approach for improving
+ambiguous labels with combined semi-supervised classification and clustering. Proceedings of
+the European Conference on Computer Vision (ECCV), 2022
+
+and the original benchmark paper and is available at https://doi.org/10.5281/zenodo.7152309
+
+# Quality MRI is published under Creative Commons BY-SA 4.0 license.
+
+The original data was created by
+
+Rafal Obuchowicz, Mariusz Oszust, and Adam Piorkowski. Interobserver variability in quality
+assessment of magnetic resonance images. BMC Medical Imaging, 20(1):109, 2020. ISSN 1471-2342.
+ doi: 10.1186/s12880-020-00505-
+
+and
+
+Igor Stepién, Rafał Obuchowicz, Adam Piórkowski, and Mariusz Oszust. Fusion of Deep
+Convolutional Neural Networks for No-Reference Magnetic Resonance Image Quality Assessment.
+ Sensors, 21(4), 2021. ISSN 1424-8220. doi: 10.3390/s21041043
+
+The data was adapted by the original benchmark paper and is available at https://doi.org/10.5281/zenodo.7152309
+
+# Synthetic is published under Creative Commons BY-SA 4.0 license.
+
+The data was created by the original benchmark paper and is available at https://doi.org/10.5281/zenodo.7152309
+
+# Treeversity#1 and Treeversity#6 are published under Creative Commons BY-SA 4.0 license.
+
+The original data is publicly available at https://arboretum.harvard.edu/research/data-resources/
+
+All images are Copyright (c) by President and Fellowers of Harvard College 2015.
+All rights reserved.
+
+The data was adapted by the original benchmark paper and is available at https://doi.org/10.5281/zenodo.7152309
+
+# Turkey  is published under Creative Commons BY-SA 4.0 license.
+
+The original data was created by
+
+N Volkmann, J Brünger, J Stracke, C Zelenka, R Koch, N Kemper, and B Spindler. Learn to
+train: Improving training data for a neural network to detect pecking injuries in turkeys. Animals
+2021, 11:1–13, 2021. doi: 10.3390/ani11092655.
+
+and
+
+Nina Volkmann, Claudius Zelenka, Archana Malavalli Devaraju, Johannes Brünger, Jenny
+Stracke, Birgit Spindler, Nicole Kemper, and Reinhard Koch. Keypoint Detection for Injury
+Identification during Turkey Husbandry Using Neural Networks. Sensors, 22(14):5188, 2022.
+ISSN 1424-8220. doi: 10.3390/s22145188
+
+
+The data was adapted by
+
+Lars Schmarje, Monty Santarossa, Simon-Martin Schröder, Claudius Zelenka, Rainer Kiko,
+Jenny Stracke, Nina Volkmann, and Reinhard Koch. A data-centric approach for improving
+ambiguous labels with combined semi-supervised classification and clustering. Proceedings of
+the European Conference on Computer Vision (ECCV), 2022
+
+and the original benchmark paper and is available at https://doi.org/10.5281/zenodo.7152309
+
+
+### Additional references to previous licenses of used software for the benchmark repository
+
+We used implementations and source code of:
+- https://github.com/tensorflow/tensorflow
+- https://github.com/pytorch/pytorch
+
+We used and adapated source code of:
+- https://github.com/PyTorchLightning/lightning-bolts
+- https://github.com/shengliu66/ELR
+- https://github.com/google/uncertainty-baselines
+- https://github.com/LiJunnan1992/DivideMix
+
+Below you can find the appropriate license of the used repositories.
+
+# Tensorflow
+
+   Copyright 2022 Tensorflow and their respective contributors
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+## Some of TensorFlow's code is derived from Caffe, which is subject to the following copyright notice:
+
+COPYRIGHT
+
+All contributions by the University of California:
+
+Copyright (c) 2014, The Regents of the University of California (Regents)
+All rights reserved.
+
+All other contributions:
+
+Copyright (c) 2014, the respective contributors
+All rights reserved.
+
+Caffe uses a shared copyright model: each contributor holds copyright over
+their contributions to Caffe. The project versioning records all such
+contribution and copyright details. If a contributor wants to further mark
+their specific copyright on a particular contribution, they should indicate
+their copyright solely in the commit message of the change when it is
+committed.
+
+LICENSE
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+   DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+   ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+CONTRIBUTION AGREEMENT
+
+By contributing to the BVLC/caffe repository through pull-request, comment,
+or otherwise, the contributor releases their content to the
+license and copyright terms herein.
+
+# Pytorch
+
+From PyTorch:
+
+Copyright (c) 2016-     Facebook, Inc            (Adam Paszke)
+Copyright (c) 2014-     Facebook, Inc            (Soumith Chintala)
+Copyright (c) 2011-2014 Idiap Research Institute (Ronan Collobert)
+Copyright (c) 2012-2014 Deepmind Technologies    (Koray Kavukcuoglu)
+Copyright (c) 2011-2012 NEC Laboratories America (Koray Kavukcuoglu)
+Copyright (c) 2011-2013 NYU                      (Clement Farabet)
+Copyright (c) 2006-2010 NEC Laboratories America (Ronan Collobert, Leon Bottou, Iain Melvin, Jason Weston)
+Copyright (c) 2006      Idiap Research Institute (Samy Bengio)
+Copyright (c) 2001-2004 Idiap Research Institute (Ronan Collobert, Samy Bengio, Johnny Mariethoz)
+
+From Caffe2:
+
+Copyright (c) 2016-present, Facebook Inc. All rights reserved.
+
+All contributions by Facebook:
+Copyright (c) 2016 Facebook Inc.
+
+All contributions by Google:
+Copyright (c) 2015 Google Inc.
+All rights reserved.
+
+All contributions by Yangqing Jia:
+Copyright (c) 2015 Yangqing Jia
+All rights reserved.
+
+All contributions by Kakao Brain:
+Copyright 2019-2020 Kakao Brain
+
+All contributions by Cruise LLC:
+Copyright (c) 2022 Cruise LLC.
+All rights reserved.
+
+All contributions from Caffe:
+Copyright(c) 2013, 2014, 2015, the respective contributors
+All rights reserved.
+
+All other contributions:
+Copyright(c) 2015, 2016 the respective contributors
+All rights reserved.
+
+Caffe2 uses a copyright model similar to Caffe: each contributor holds
+copyright over their contributions to Caffe2. The project versioning records
+all such contribution and copyright details. If a contributor wants to further
+mark their specific copyright on a particular contribution, they should
+indicate their copyright solely in the commit message of the change when it is
+committed.
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+3. Neither the names of Facebook, Deepmind Technologies, NYU, NEC Laboratories America
+   and IDIAP Research Institute nor the names of its contributors may be
+   used to endorse or promote products derived from this software without
+   specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+
+
+# Lightning Bolts
+
+   Copyright 2018-2021 William Falcon
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+
+# Uncertainty Baselines
+
+Copyright 2022 Google
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+# DivideMix
+
+Copyright (c) 2020 Junnan Li
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+

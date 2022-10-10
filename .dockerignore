@@ -1,0 +1,6 @@
+./wandb/
+./evaluation_logs/
+./tuning_logs/
+./lightning_logs/
+./.git/
+./.idea/

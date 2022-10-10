@@ -1,0 +1,10 @@
+
+\.idea/
+
+src/__pycache__/
+
+*.pyc
+evaluation_logs/
+wandb/
+lightning_logs/
+tuning_logs/
