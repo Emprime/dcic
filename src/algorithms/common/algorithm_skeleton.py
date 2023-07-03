@@ -1,6 +1,8 @@
 import traceback
 from os.path import join
 from random import Random
+import os
+from absl import app
 from absl import flags
 import numpy as np
 
@@ -74,6 +76,13 @@ class AlgorithmSkelton:
             #  percentage, number
             self.init_values = [
                 (0.1,10),(0.2,5),(0.5,2) # semi-supervised + multiple
+            ]
+        elif FLAGS.percentage_labeled_data == -4 or FLAGS.number_annotations_per_image == -4:
+            #  percentage, number
+            self.init_values = [
+                (1,10),(1,5),(1,3), (1,1), # multiple
+                (0.99, 10), (0.99, 5), (0.99, 3), (0.99, 1),  # fake repetition
+                (0.98, 10), (0.98, 5), (0.98, 3), (0.98, 1)  # fake repetition
             ]
         else:
             self.init_values = [
@@ -157,6 +166,9 @@ class AlgorithmSkelton:
             else:
                 raise ValueError(f"The specified split {split} is invalid")
 
+            # hard_gt = np.argmax(soft_gt)
+            # hard_label = cl[hard_gt]
+
             new_ds.add_image(path, split, list(soft_gt), info={'original_split': org_split})
 
         return new_ds
@@ -198,7 +210,7 @@ class AlgorithmSkelton:
                     raw_ds = DatasetDCICJson.from_file(join(dataset_info.input_directory, file_name))
                     dataset_name = raw_ds.dataset_name
                     assert folder_name == dataset_name, f"Mismatch between folder name {folder_name} and dataset name {dataset_name}"
-                    assert dataset_info.name == dataset_name, f"Mismatch between loaded dataset info name {folder_name} and dataset name {dataset_name}"
+                    assert dataset_info.name == dataset_name, f"Mismatch between loaded dataset info name {dataset_info.name} and dataset name {dataset_name}"
                     v_fold = raw_ds.v_fold
 
 

@@ -1,6 +1,7 @@
 import glob
 import hashlib
 import os
+import random
 from random import Random
 import matplotlib.pyplot as plt
 import cv2
@@ -31,6 +32,8 @@ class AnnotationOracle:
         """
         self.annoJson = AnnotationJson.from_file(annotation_file)
         self.paths, self.classes, self.prob_data = self.annoJson.get_probability_data()
+        # self.budget = 0
+        # self.weighted_budget = 0
 
         # save for bookkeeping on saving in dataset
         self.datasetDCIC = None
@@ -49,8 +52,24 @@ class AnnotationOracle:
 
         self.r.seed(49312)
 
+        # self.budget = datasetDCIC.budget
+        # self.weighted_budget = datasetDCIC.weighted_budget
+
         # save for bookkeeping on saving in dataset
         self.datasetDCIC = datasetDCIC
+
+        # convert all paths to unique id
+        paths = []
+        for p in self.paths:
+            unique_path = self.datasetDCIC.extract_unique_id_from_path(p)
+            if unique_path in paths:
+                print(self.paths)
+            assert unique_path not in paths, f"Duplicates are not allowed for the unique id {unique_path} in {paths}"
+            paths.append(unique_path)
+
+
+
+        self.paths = paths
 
 
     def get_classes(self):
@@ -70,6 +89,8 @@ class AnnotationOracle:
 
         assert self.datasetDCIC is not None , "Oracle is not initialized, call init(dataset)"
 
+        path = self.datasetDCIC.extract_unique_id_from_path(path)
+
         if number_annotations_per_image < 0:
             # get complete groundtruth,
             return self.prob_data[self.paths.index(path)]
@@ -81,21 +102,25 @@ class AnnotationOracle:
 
 
 
-    def get_annotation(self,file, weight=1, num_anno=1):
+    def get_annotation(self, path, weight=1, num_anno=1):
         """
         simulate selecting an annotation from the underyling distribution,
         you can define a different weight to calculate the budget
-        :param file:
+        :param path:
         :return:
         """
 
         assert self.datasetDCIC is not None, "Oracle is not initialized, call init(dataset)"
 
-        prob = self.prob_data[self.paths.index(file)]
+        path = self.datasetDCIC.extract_unique_id_from_path(path)
+
+        prob = self.prob_data[self.paths.index(path)]
         anno = np.zeros((len(prob)))
         labels = self.r.choices(range(len(prob)),weights=prob,k=num_anno)
         for l in labels:
             anno[l] += 1
+
+        # print(file,prob,anno)
 
         self.datasetDCIC.budget += num_anno
         self.datasetDCIC.weighted_budget += num_anno * weight
@@ -125,7 +150,7 @@ class AnnotationJson:
 
 
     @classmethod
-    def from_file(cls, annotation_file):
+    def from_file(cls, annotation_file, check_for_annominous=True):
         """
         Load annotation file and return handler
         :param annotation_file:
@@ -149,6 +174,12 @@ class AnnotationJson:
             labels = []
 
             for annos in annotation_jsons:
+
+                # safe guard for anonimous data
+                if check_for_annominous:
+                    assert annos.get('user_mail','INVALID') == 'INVALID'
+                    assert "INVALID" in annos.get('name','INVALID')
+
                 for entry in annos["annotations"]:
 
                     # add only valid annotations to table
@@ -267,6 +298,11 @@ class AnnotationJson:
             # reset time because it might not be valid anymore
             self.add_annotationset(anno_set["name"], anno_set["user_mail"], 0.0 , new_annotations)
 
+    def anoymize(self):
+        for anno_set in self.anno_json:
+            anno_set['name'] = "INVALID"
+            anno_set['user_mail'] = "INVALID"
+            anno_set['annotation_time'] = 0
 
     def add_annotationset(self, anno_set_name, user, annotation_time, annotations : List[Tuple[str,str, datetime.datetime]], update_summary_table=True, ignore_wrong_dataset=False, ignore_class=[]):
         """
@@ -280,8 +316,8 @@ class AnnotationJson:
         """
 
         set_json = {
-            "name": anno_set_name, "dataset_name": self.dataset_name,
-            "user_mail": user, "annotation_time": annotation_time, "annotations": []
+            "name": 'INVALID'+str(random.randint(0,999)), "dataset_name": self.dataset_name,
+            "user_mail": 'INVALID', "annotation_time": -1, "annotations": []
         }
         for image_path, class_label, created_at in tqdm(annotations):
 
@@ -307,6 +343,9 @@ class AnnotationJson:
                     self.anno_table[class_label] = 0
                 if image_path not in self.anno_table.index:
                     # add new row
+                    # cols = list(self.anno_table.columns)
+                    # ids = list(self.anno_table.index.values) + [image_path]
+                    # self.anno_table = self.anno_table.append(pd.DataFrame(data=np.zeros((len(cols),1)), index=ids, columns=cols))
                     self.anno_table.loc[image_path] = 0
 
 
@@ -341,14 +380,14 @@ class AnnotationJson:
             yield (anno_set["name"], anno_set["dataset_name"], anno_set["user_mail"], anno_set["annotation_time"], annos)
 
 
-    def add_other_anno_file(self, annotationfile: str, ignore_wrong_dataset = False, ignore_class=[]):
+    def add_other_anno_file(self, annotationfile: str, ignore_wrong_dataset = False, ignore_class=[], check_for_annonimous=True):
         """
         add another annotation file to this annotation expects to have the same dataset name
         :param annotationfile:
         :param ignore_wrong_dataset: during adding the new item ignores wrong dataset warnings
         :return:
         """
-        temp = AnnotationJson.from_file(annotationfile)
+        temp = AnnotationJson.from_file(annotationfile,check_for_annominous=check_for_annonimous)
 
         for name, dataset_name, user, time, annos in temp.get_annotationsets():
             self.add_annotationset(name,user, time, annos, ignore_wrong_dataset=ignore_wrong_dataset, ignore_class=ignore_class)

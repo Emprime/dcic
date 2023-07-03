@@ -30,18 +30,20 @@ class SWAV(AlgorithmSkelton):
         # model args
         parser = SWAV_module.add_model_specific_args(parser)
 
-        datamodule = BenchmarkDataModule(ds, dataset_info, 32)
+
 
         args, unknown = parser.parse_known_args()
 
         # special swav value
-        args.batch_size = 32
+        args.batch_size = 16 if dataset_info.input_size <= 112 else 32
+
+        datamodule = BenchmarkDataModule(ds, dataset_info, args.batch_size)
         args.num_classes = dataset_info.num_classes
         args.num_samples = len(datamodule.train_dataloader())
         args.fast_dev_run = False
         args.dataset=dataset_info.name
         # arguments also mnaula added in `lighning_benchmark.py`
-        args.size_crops = [224, 128] if dataset_info.input_size <= 112 else [192,64]
+        args.size_crops = [192, 96] if dataset_info.input_size <= 112 else [192,64]
         args.nmb_crops = [2, 1] if dataset_info.input_size <= 112 else [1,2]
         args.min_scale_crops = [0.5, 0.3]
         args.max_scale_crops = [1.0, 0.5]
@@ -70,8 +72,17 @@ class SWAV(AlgorithmSkelton):
 
         model = SWAV_module(**args.__dict__)
 
-        callbacks = []
+        # print(model.hparams)
+        # print(model)
 
+        callbacks = []
+        # online_evaluator = SSLOnlineEvaluator(
+        #     z_dim=model.hparams.hidden_mlp,
+        #     num_classes=args.num_classes,
+        #     dataset=args.dataset,
+        # )
+
+        # callbacks.append(online_evaluator)
 
         csv_logger = pl_loggers.CSVLogger(save_dir="/data/logs/lightning")
 

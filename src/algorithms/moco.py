@@ -79,7 +79,7 @@ class MOCO(AlgorithmSkelton):
         epochs = 50
         finetuner = SSLFineTuner(model, in_features=model.hparams.emb_dim, num_classes=dataset_info.num_classes, epochs=epochs)
         # update datamodule
-        datamodule = BenchmarkDataModule(ds, dataset_info, 32)
+        datamodule = BenchmarkDataModule(ds, dataset_info, 32, drop_last=True)
         datamodule.use_unlabeled_data = False
         datamodule.train_transforms = BenchmarkTransforms(dataset_info,train=True,mode='finetune', severity=self.severity)
         datamodule.val_transforms = BenchmarkTransforms(dataset_info,train=False,mode='finetune', severity=self.severity)

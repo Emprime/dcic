@@ -42,6 +42,8 @@ flags.DEFINE_integer(name='verbose',
 
 flags.DEFINE_boolean(name='wandb', help="log to weights and biases", default=False)
 
+flags.DEFINE_boolean(name='multi_gpu', help="enable_multi_gpu support", default=False)
+
 
 flags.DEFINE_boolean(name='gap', help="Store intermedidate GAP Features for visualizations", default=False)
 
@@ -138,7 +140,19 @@ def evaluation_function(config, dcicReport=None):
         # prevent bug of to small sets
         batch_size = batch_size if batch_size < len(gt_train) else len(gt_train)
 
+        # if save_gap:
+        #     batch_size = 16
 
+        # setup datasets
+        # if tuning:
+        #     num_samples = 800
+        #
+        #     # during tuning take subset for training
+        #     train_ds = tf.data.Dataset.zip((
+        #         input_ds_train, target_ds_train
+        #     )).take(num_samples).repeat().shuffle(100).batch(batch_size).prefetch(tf.data.AUTOTUNE)  # shuffle before batching
+        #
+        # else:
         train_ds = tf.data.Dataset.zip((
             input_ds_train, target_ds_train
         )).repeat().shuffle(100).batch(batch_size).prefetch(tf.data.AUTOTUNE)  # shuffle before batching
@@ -154,52 +168,74 @@ def evaluation_function(config, dcicReport=None):
         )).batch(batch_size).prefetch(tf.data.AUTOTUNE)
 
 
+        # setup multi gpu
+        if FLAGS.multi_gpu:
+            strategy = tf.distribute.experimental.CentralStorageStrategy()
+        else:
+            strategy = tf.distribute.get_strategy()
+
 
         # setup model
-        model, gap_model = get_model(dataset_name, num_classes, weights=weights, network_name=network, dropout=dropout, input_upsampling=dataset_info.input_sampling if input_upsampling else 0, get_gap_model=True)
+        with strategy.scope():
+            model, gap_model = get_model(dataset_name, num_classes, weights=weights, network_name=network, dropout=dropout, input_upsampling=dataset_info.input_sampling if input_upsampling else 0, get_gap_model=True)
 
-        class_weights = dataset_info.class_weights
+            # class_weights = dict(
+            #     zip(np.arange(num_classes), class_weight.compute_class_weight(class_weight='balanced',
+            #                                                                   classes=np.arange(num_classes),
+            #                                                                   y=np.argmax(gt_test, axis=1))))
 
-        if not use_class_weights:
-            class_weights = None
+            class_weights = dataset_info.class_weights
 
-        if verbose > 0:
-            print("Used class weights: %s" % class_weights)
-            print(f"Used {len(gt_train)} training samples and {len(gt_val)} validation samples and {len(gt_test)} test images")
-            print(f"Example of used soft_gt for the first three samples: {gt_train[:3,:]}")
+            if not use_class_weights:
+                class_weights = None
 
-        loss = tf.keras.losses.categorical_crossentropy # if mode == 'hard' else tf.keras.losses.kl_divergence
+            if verbose > 0:
+                print("Used class weights: %s" % class_weights)
+                print(f"Used {len(gt_train)} training samples and {len(gt_val)} validation samples and {len(gt_test)} test images")
+                print(f"Example of used soft_gt for the first three samples: {gt_train[:3,:]}")
 
-        decay_steps = int(epochs * len(gt_train) / batch_size)
+            loss = tf.keras.losses.categorical_crossentropy # if mode == 'hard' else tf.keras.losses.kl_divergence
 
-        if opt == "sgdwr":
-            learning_rate_fn = tf.keras.optimizers.schedules.CosineDecayRestarts(lr, first_decay_steps=decay_steps // 5)
-        else:
-            learning_rate_fn = tf.keras.optimizers.schedules.CosineDecay(lr, decay_steps=decay_steps)
+            decay_steps = int(epochs * len(gt_train) / batch_size)
 
-        step = tf.Variable(0, trainable=False)
+            if opt == "sgdwr":
+                learning_rate_fn = tf.keras.optimizers.schedules.CosineDecayRestarts(lr, first_decay_steps=decay_steps // 5)
+            else:
+                learning_rate_fn = tf.keras.optimizers.schedules.CosineDecay(lr, decay_steps=decay_steps)
+            # optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate_fn, momentum=0.9, nesterov=False)
 
-        # lr and wd can be a function or a tensor
-        learning_rate = lr * learning_rate_fn(step)
-        wd = lambda: weight_decay * learning_rate_fn(step)
+            # =optimizers.RMSprop(learning_rate=2e-5)
 
-        if opt == "sgdw" or opt == "sgdwr":
-            optimizer = tfa.optimizers.SGDW(
-                learning_rate=learning_rate, weight_decay=wd, momentum=0.9)
-        elif opt == "sgd":
-            optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=0.9)
-        elif opt == "adam":
-            optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
+            step = tf.Variable(0, trainable=False)
+
+            # lr and wd can be a function or a tensor
+            learning_rate = lr * learning_rate_fn(step)
+            wd = lambda: weight_decay * learning_rate_fn(step)
+
+            if opt == "sgdw" or opt == "sgdwr":
+                optimizer = tfa.optimizers.SGDW(
+                    learning_rate=learning_rate, weight_decay=wd, momentum=0.9)
+            elif opt == "sgd":
+                optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=0.9)
+            elif opt == "adam":
+                optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
 
 
-        model.compile(
-            loss=loss,
-            optimizer=optimizer,
-            metrics=["accuracy"],
-        )
+            model.compile(
+                loss=loss,
+                optimizer=optimizer,
+                metrics=["accuracy"],
+            )
+
+        y_pred = model.predict(test_ds)
+
+
 
         # train network
         if not save_gap:
+            if verbose > 0:
+                print(f"Train network for {epochs} epochs")
+
             c = [wandb.keras.WandbCallback(save_model=False )] if wandb_usage else []
             model.fit(x=train_ds, validation_data=val_ds, epochs=epochs, verbose=2 if FLAGS.verbose == 3 else 0,
                       steps_per_epoch=steps_per_epoch,
@@ -293,6 +329,10 @@ def main(argv):
                         if (v_fold_index+1) not in slices:
                             print("Skip slice ", v_fold_index+1)
                             continue
+
+                        # special for verse
+                        if "verse" in f:
+                            v_fold_index = 2 # will be added with +1 to 3
 
                         # redudant load to get access to the info
                         dj = DatasetDCICJson.from_file(join(FLAGS.output_folder, folder, f))

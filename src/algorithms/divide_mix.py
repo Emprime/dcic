@@ -38,6 +38,7 @@ class DivideMix(AlgorithmSkelton):
         self.num_epochs = 80
         self.seed = 123
         self.gpuid = 0
+        # self.num_batches = 1000
 
         torch.cuda.set_device(self.gpuid)
         random.seed(self.seed)
@@ -133,10 +134,10 @@ class DivideMix(AlgorithmSkelton):
         num_iter = (len(labeled_trainloader.dataset) // self.batch_size) + 1
         for batch_idx, (inputs_x, inputs_x2, labels_x, w_x) in enumerate(labeled_trainloader):
             try:
-                inputs_u, inputs_u2 = unlabeled_train_iter.next()
+                inputs_u, inputs_u2 = next(unlabeled_train_iter)
             except:
                 unlabeled_train_iter = iter(unlabeled_trainloader)
-                inputs_u, inputs_u2 = unlabeled_train_iter.next()
+                inputs_u, inputs_u2 = next(unlabeled_train_iter)
             batch_size = inputs_x.size(0)
 
             # Transform label to one-hot
@@ -282,8 +283,13 @@ class DivideMix(AlgorithmSkelton):
                 _, predicted = torch.max(outputs, 1)
                 predcitions = outputs.cpu().detach().numpy()
 
+                # print(paths, predicted, outputs)
+
+
                 all_paths.extend(paths)
                 all_predictions.extend(predcitions)
+
+                # break
 
         # convert to predictions file
 
@@ -291,7 +297,11 @@ class DivideMix(AlgorithmSkelton):
             split = ds.get(path, 'original_split')  # determine original split before move to unlabeled
             ds.update_image(path, split, [float(temp) for temp in all_predictions[i]])
 
-
+        # print(all_paths, all_predictions)
+        #         total += targets.size(0)
+        #         correct += predicted.eq(targets).cpu().sum().item()
+        # acc = 100. * correct / total
+        # print("\n| Test Acc: %.2f%%\n" % (acc))
 
     def eval_train(self,epoch, model):
         model.eval()

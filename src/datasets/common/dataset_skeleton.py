@@ -6,7 +6,9 @@ from absl import flags
 import os
 import cv2
 from tqdm import tqdm
-
+from urllib.request import urlopen
+from tempfile import NamedTemporaryFile
+from shutil import unpack_archive
 from src.util.json import DatasetDCICJson
 from src.util.oracle import AnnotationOracle
 
@@ -17,7 +19,18 @@ flags.DEFINE_string(name='input_folder',
 flags.DEFINE_string(name='evaluate_folder', default="evaluate_datasets",
                     help='The folder with a perfect ground-truth for the datasets (subfolder under the main data root directory')
 
-hyper_parameters = {'Benthic': {'weights': 'imagenet', 'kl': '0.7382', 'macro_f1': '0.6572', 'macro_acc': '0.6487', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.0, 'network': 'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdw', 'input_upsampling': False, 'weight_decay': 0.001}, 'CIFAR10H': {'weights': 'imagenet', 'kl': '0.4270', 'macro_f1': '0.9004', 'macro_acc': '0.9007', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.0, 'network': 'resnet50v2', 'augmentation': 0, 'opt': 'sgdwr', 'input_upsampling': True, 'weight_decay': 0.0005}, 'MiceBone': {'weights': 'imagenet', 'kl': '0.2927', 'macro_f1': '0.6469', 'macro_acc': '0.6607', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.0, 'network': 'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdwr', 'input_upsampling': True, 'weight_decay': 0.001}, 'Plankton': {'weights': 'imagenet', 'kl': '0.2466', 'macro_f1': '0.8992', 'macro_acc': '0.9183', 'lr': 1e-05, 'batch_size': 128, 'dropout': 0.0, 'network': 'incepresv2', 'augmentation': 1, 'opt': 'adam', 'input_upsampling': True, 'weight_decay': 0.001}, 'QualityMRI': {'weights': 'imagenet', 'kl': '0.0625', 'macro_f1': '0.7723', 'macro_acc': '0.7580', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.5, 'network': 'densenet121', 'augmentation': 0, 'opt': 'sgdwr', 'input_upsampling': False, 'weight_decay': 0.001}, 'Synthetic': {'weights': 'imagenet', 'kl': '0.0638', 'macro_f1': '0.9048', 'macro_acc': '0.9058', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.5, 'network': 'densenet121', 'augmentation': 1, 'opt': 'sgdw', 'input_upsampling': True, 'weight_decay': 0.0005}, 'Treeversity#1': {'weights': 'imagenet', 'kl': '0.3876', 'macro_f1': '0.7972', 'macro_acc': '0.8044', 'lr': 1e-05, 'batch_size': 128, 'dropout': 0.0, 'network': 'densenet121', 'augmentation': 1, 'opt': 'adam', 'input_upsampling': True, 'weight_decay': 0.0005}, 'Treeversity#6': {'weights': 'imagenet', 'kl': '0.5853', 'macro_f1': '0.6636', 'macro_acc': '0.6763', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.5, 'network': 'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdwr', 'input_upsampling': False, 'weight_decay': 0.001}, 'Turkey': {'weights': 'imagenet', 'kl': '0.2923', 'macro_f1': '0.7552', 'macro_acc': '0.7663', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.5, 'network': 'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdw', 'input_upsampling': False, 'weight_decay': 0.0005}}
+hyper_parameters = {
+    'Benthic': {'weights': 'imagenet', 'kl': '0.7382', 'macro_f1': '0.6572', 'macro_acc': '0.6487', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.0, 'network': 'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdw', 'input_upsampling': False, 'weight_decay': 0.001},
+    'CIFAR10H': {'weights': 'imagenet', 'kl': '0.4270', 'macro_f1': '0.9004', 'macro_acc': '0.9007', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.0, 'network': 'resnet50v2', 'augmentation': 0, 'opt': 'sgdwr', 'input_upsampling': True, 'weight_decay': 0.0005},
+    'MiceBone': {'weights': 'imagenet', 'kl': '0.2927', 'macro_f1': '0.6469', 'macro_acc': '0.6607', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.0, 'network': 'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdwr', 'input_upsampling': True, 'weight_decay': 0.001},
+    'Pig' : {'weights': 'imagenet', 'kl': '0.4744', 'macro_f1': '0.4464', 'macro_acc': '0.4544', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.5, 'network':
+        'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdw', 'input_upsampling': False, 'weight_decay': 0.0005},
+    'Plankton': {'weights': 'imagenet', 'kl': '0.2466', 'macro_f1': '0.8992', 'macro_acc': '0.9183', 'lr': 1e-05, 'batch_size': 128, 'dropout': 0.0, 'network': 'incepresv2', 'augmentation': 1, 'opt': 'adam', 'input_upsampling': True, 'weight_decay': 0.001},
+    'QualityMRI': {'weights': 'imagenet', 'kl': '0.0625', 'macro_f1': '0.7723', 'macro_acc': '0.7580', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.5, 'network': 'densenet121', 'augmentation': 0, 'opt': 'sgdwr', 'input_upsampling': False, 'weight_decay': 0.001},
+    'Synthetic': {'weights': 'imagenet', 'kl': '0.0638', 'macro_f1': '0.9048', 'macro_acc': '0.9058', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.5, 'network': 'densenet121', 'augmentation': 1, 'opt': 'sgdw', 'input_upsampling': True, 'weight_decay': 0.0005},
+    'Treeversity#1': {'weights': 'imagenet', 'kl': '0.3876', 'macro_f1': '0.7972', 'macro_acc': '0.8044', 'lr': 1e-05, 'batch_size': 128, 'dropout': 0.0, 'network': 'densenet121', 'augmentation': 1, 'opt': 'adam', 'input_upsampling': True, 'weight_decay': 0.0005},
+    'Treeversity#6': {'weights': 'imagenet', 'kl': '0.5853', 'macro_f1': '0.6636', 'macro_acc': '0.6763', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.5, 'network': 'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdwr', 'input_upsampling': False, 'weight_decay': 0.001},
+    'Turkey': {'weights': 'imagenet', 'kl': '0.2923', 'macro_f1': '0.7552', 'macro_acc': '0.7663', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.5, 'network': 'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdw', 'input_upsampling': False, 'weight_decay': 0.0005}}
 
 
 
@@ -76,6 +89,18 @@ class DatasetSkeleton:
 
         # check if data is available and check number of images
         directory = self.raw_data_directory
+
+        if not os.path.exists(directory):
+            print(f"Download raw files to {directory}, This can take a moment ...")
+
+            zipurl = f'https://zenodo.org/record/7180818/files/{self.name}.zip'
+            with urlopen(zipurl) as zipresp, NamedTemporaryFile() as tfile:
+                tfile.write(zipresp.read())
+                tfile.seek(0)
+                unpack_archive(tfile.name, self.raw_data_root_directory, format='zip')
+
+            print(f"Successfully downloaded and extrated raw data for {self.name}")
+
         assert os.path.exists(directory), f"No raw files found under {directory}"
         for i in range(5):
             files = os.listdir(join(directory, f"fold{i+1}"))
@@ -192,6 +217,7 @@ class DatasetSkeleton:
                 if np.any(np.abs(class_distributions-np.mean(class_distributions,axis=0,keepdims=True)) > 0.05):
                     print(f"WARNING: Relative distributions between folds is skewed! More than 5% deviation from the mean per classs. "
                           f"Details (row folds, columns averaged elements per fold)\n{class_distributions}")
+                # oracle.annoJson.print_statistics()
 
             dcic_name = f'{self.name}-slice{v_fold}.json'
             datasetDCIC.save_jsons(join(directory, dcic_name))

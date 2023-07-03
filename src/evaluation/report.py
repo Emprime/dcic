@@ -74,8 +74,17 @@ class DCICReport:
 
     def inner_score_calcualtion(self,y_true,y_pred, verbose, prefix=""):
 
+        # print(y_true.shape,y_pred.shape)
+
+        # manually caluclate kl divergence
+        # m = tf.keras.metrics.KLDivergence()
+        # m.update_state(y_true, y_pred)
+        # kl = m.result().numpy()
+
+        # print(kl)
 
         kl = self.kl_div(y_true, y_pred)
+        # print(kl)
 
         # cast to hard labels
         y_true = np.argmax(y_true, axis=1)
@@ -130,6 +139,9 @@ class DCICReport:
             if i < len(self.cs.get("kl",[])):
                 continue # scores have already been calculated
 
+            # print(dataset_json.dataset_name)
+            # print(y_true.shape)
+            # print(y_pred.shape)
 
             # store classes
             cl = dataset_json.classes
@@ -155,9 +167,14 @@ class DCICReport:
             # analyse input elements
             dataset_name = dataset_json.dataset_name
             dataset_info = get_all_dataset_infos()[dataset_name]
+            split_number = i+1 if "verse" not in dataset_name else 3
             org_dataset_json = DatasetDCICJson.from_file(join(dataset_info.evaluate_directory,
                                                               "{name}-slice{split}.json".format(name=dataset_name,
-                                                                                                split=i + 1)))
+                                                                                                split=split_number)))
+
+
+            # print(len(org_dataset_json))
+            # print(len(dataset_json))
 
             provided_gt = np.array([
                 soft_gt
@@ -174,6 +191,10 @@ class DCICReport:
             if verbose > 1:
                 print("# Calculation of scores for fold", i)
 
+            # print(provided_gt.shape)
+            # print(org_gt.shape)
+            # print(org_gt)
+
 
             # calculate scores for trained and input values
             if y_true is not None and y_pred is not None:
@@ -181,6 +202,7 @@ class DCICReport:
             else:
                 f1, acc, kl = -1, -1, -1
 
+            # print(org_gt.shape, provided_gt.shape)
             if org_gt.shape[1] > 0 and provided_gt.shape[1] > 0 and len(org_gt) == len(provided_gt): # check data is available and of same size
                 self.inner_score_calcualtion(org_gt, provided_gt, verbose, prefix="input_")
 
@@ -209,6 +231,10 @@ class DCICReport:
 
 
     def _calculate_values_from_scores(self,k,v, verbose):
+
+      # assert self.cl is not None, "Classes are missing, you need to successfully call end_run() before this method"
+
+
 
         if k == 'input_consistency':
 
@@ -338,7 +364,7 @@ class DCICReport:
             for experiment in sorted([folder for folder in os.listdir(directory) if os.path.isdir(join(directory,folder))]):
                 print("Load results of ", experiment)
 
-                # if not "Benthic-byol" in experiment:
+                # if not "verse" in experiment:
                 #     continue
 
                 files = sorted(os.listdir(join(directory,experiment)))
@@ -356,6 +382,7 @@ class DCICReport:
                         except:
                             # ignore
                             j2 = None
+                        # print(j2, len(j2) if j2 is not None else "MIssing", len(j1))
                         if j2 is None:
                             j = j1
                         else:
@@ -415,6 +442,8 @@ class DCICReport:
 
         path = join("/data/evaluation_logs", f"{experiment_name}")
         os.makedirs(path, exist_ok=True)
+        # might not work with high parallelization
+        # self.df.to_csv(join(path, f"logs_{time.strftime('%d-%m-%Y-%H-%M-%S')}.csv"))
 
         # overwrite elements
         for i, j in enumerate(self.dataset_jsons):

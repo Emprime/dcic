@@ -4,7 +4,7 @@ import os
 
 def main(args):
 
-    for dataset_name, dataset_class in get_all_dataset_infos().items():
+    for dataset_name, dataset_class in sorted(get_all_dataset_infos().items()):
         print(f"Check & setup dataset {dataset_name}")
         # check naming is correct
         assert dataset_name == dataset_class.name

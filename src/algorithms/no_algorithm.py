@@ -25,6 +25,8 @@ def main(argv):
     alg = No_algorithm()
     alg.apply_algorithm()
 
+    alg.report.show()
+
 
 
 if __name__ == '__main__':

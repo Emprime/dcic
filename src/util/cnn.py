@@ -15,7 +15,7 @@ from src.util.const import get_all_dataset_infos
 from src.util.json import DatasetDCICJson
 
 
-def get_model(dataset_name, num_classes, weights=None, network_name="resnet50v2", dropout=0.5, input_upsampling = 0, get_gap_model = False):
+def get_model(dataset_name, num_classes, weights=None, network_name="resnet50v2", dropout=0.5, input_upsampling = 0, overclustering_k = 0, get_gap_model = False):
     """
     get the model for the given network name
     :return:
@@ -40,7 +40,7 @@ def get_model(dataset_name, num_classes, weights=None, network_name="resnet50v2"
 
         input_tensor = x
 
-    if network_name == "resnet50v2" or network_name == "resnet50v2_large":
+    if network_name == "resnet50v2" or network_name == "resnet50v2_large" or network_name == "resnet50v2_dc3" :
         backbone = ResNet50V2(include_top=False, weights=weights, input_shape=(w_h, w_h, 3), input_tensor=input_tensor, pooling='avg')
     elif network_name == "densenet121":
         backbone = DenseNet121(include_top=False, weights=weights, input_shape=(w_h, w_h, 3), input_tensor=input_tensor, pooling='avg')
@@ -62,6 +62,11 @@ def get_model(dataset_name, num_classes, weights=None, network_name="resnet50v2"
 
     if network_name == "wideresnet28-10":
         outputs = x
+    elif overclustering_k > 0:
+        # dc3 model
+        x = layers.Dropout(dropout)(out)
+        #output is num classes + overclustering + fuzziness
+        outputs = layers.Dense(num_classes + num_classes*overclustering_k + 1)(x)
     elif network_name != "resnet50v2_large":
         x = layers.Dropout(dropout)(out)
         outputs = layers.Dense(num_classes, activation='softmax')(x)

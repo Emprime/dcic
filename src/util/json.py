@@ -118,6 +118,13 @@ class DatasetDCICJson:
         for img_entry in self.images_dict.values():
             yield (img_entry['path'], img_entry['split'], img_entry['gt'], img_entry['soft_gt'])
 
+    # def get_infos(self, path):
+    #     """
+    #     get complete info dictionary
+    #     :param path:
+    #     :return:
+    #     """
+    #     return self.images_dict[path]['info']
 
     def get(self,path, key):
         """
@@ -157,6 +164,8 @@ class DatasetDCICJson:
 
         os.makedirs(os.path.dirname(out_path), exist_ok=True)
 
+        # print("dump to file...")
+        # print(len(self.images))
         with open(out_path, 'w') as outfile:
             json.dump(dataset_json, outfile)
 
@@ -169,7 +178,11 @@ class DatasetDCICJson:
         :return:
         """
 
-        id = path.split("/")[-1][:-4] # take last element after / and remove .png
+        # check if already unique
+        if ".png" in path:
+            id = path.split("/")[-1][:-4] # take last element after / and remove .png
+        else:
+            id = path
 
         if "-[" in id:
             id = id.split("-[")[0] # legacy remove visualization elements
@@ -214,10 +227,14 @@ class DatasetDCICJson:
         # detect erronous sets, sum needs to be one
         if len(gt) > 0:
             sums = np.sum(gt,axis=1, keepdims=True)
+            # print(sums[:3],np.any(np.abs(sums-1)>0.01))
+            # print(_split,gt[:3,:])
 
             if np.any(np.abs(sums-1)>0.01):
                 # sum does not add up to one
                 gt = gt/sums
+                # print(gt[:3,:])
+
         # shuffle dataset once because datasets are structured
         indices = np.arange(paths.shape[0])
         random.seed(42)

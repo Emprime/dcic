@@ -10,6 +10,7 @@ FLAGS = flags.FLAGS
 
 # define flags
 flags.DEFINE_integer(name='input_size', default=96, help='default input size of the images if it can not be determined automatically')
+# flags.DEFINE_integer(name='number_classes', default=10, help='default number of classes if it can not be determined automatically')
 
 
 def GetDatasetNames(dataset_name_flag):
