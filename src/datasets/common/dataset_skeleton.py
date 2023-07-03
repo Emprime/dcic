@@ -93,7 +93,7 @@ class DatasetSkeleton:
         if not os.path.exists(directory):
             print(f"Download raw files to {directory}, This can take a moment ...")
 
-            zipurl = f'https://zenodo.org/record/7180818/files/{self.name}.zip'
+            zipurl = f'https://zenodo.org/record/7180818/files/{self.name.replace("#","")}.zip'
             with urlopen(zipurl) as zipresp, NamedTemporaryFile() as tfile:
                 tfile.write(zipresp.read())
                 tfile.seek(0)
