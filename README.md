@@ -32,14 +32,8 @@ Hint: If the command fails with a GPG error, open Dockerfile and follow the inst
 
 All following docker commands should be executed within the folder of this downloaded project.
    
-You have to download the raw data into a location of your choice `<DATASET_ROOT>`.
+You have to download the raw data into a location of your choice `<DATASET_ROOT>`. Please see the information about datasets at the end.
 
-```
-TODO CHANGE LATER TO PUBLIC RELEASE
-Download available at:
-https://cloud.rz.uni-kiel.de/index.php/s/6ak8emD7mQpn7wM
-Password: *9mD3Byi/
-```
 
 After this you set the correct values for your system in `./run.sh`
 This includes own [Weights & Bias](https://wandb.ai/) API Token if you want to log to their system.
