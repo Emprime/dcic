@@ -9,11 +9,9 @@ def main(args):
         # check naming is correct
         assert dataset_name == dataset_class.name
         path = dataset_class.root_directory + 'raw_datasets/' + dataset_name
-        if os.path.exists(path):
-            # check and setup
-            dataset_class.check_setup()
-        else:
-            print(f"Check & setup dataset failed for {dataset_name}. The folder {path} does not exist.")
+
+        # check and setup
+        dataset_class.check_setup()
 
 
 if __name__ == '__main__':
