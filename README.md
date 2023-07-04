@@ -26,6 +26,12 @@ Please cite as
 
 Please see the full details about the used datasets below, which should also be cited as part of the license.
 
+## Hands-On Tutorial
+
+We provide some hands-on tutorial in Google Colab to get an understanding of the provided pipeline.
+
+- Overview about basics, Creation of own methods and datasets [https://colab.research.google.com/drive/1Vnth3RYD0dlyT08n4CMSw5W1XRat3ver](https://colab.research.google.com/drive/1Vnth3RYD0dlyT08n4CMSw5W1XRat3ver)
+
 ## Installation
 
 All provided code should be run with docker and thus a working docker version with GPU support is expected.
@@ -433,11 +439,67 @@ Please cite as
 
 ### Analyse
 
-This script allows to summarize and evaluate the generated results which are stored in
+This script allows to summarize and evaluate the generated results which are stored in `evaluation_logs`.
+It also may generate plots of the results which are stored in the folder `images` in the `evaluation_logs`folder.
+
+Overall, the script seems to be designed to analyze and visualize data using the `DCICReport` object and the `analyze` function. The `analyze`function can be called manually or via a command-line interface for generating different visualizations based on user input.
+
+ The `analyze` function is responsible for grouping, analyzing, and visualizing data based on specified parameters.
+    It takes in a DCICReport instance, experiment name, dataset groups and selections, method groups and selections, annotation selections, score names, and various optional parameters.
+    
+ 
+ 
+ #### Static function call of `analyze`
+ 
+ Based on the following example call of `analyze` the usage of all parameters will be explained
+ 
+ ```
+ analyze(report, "1_more_annotations-0",
+            dataset=grouped_datasets,
+            method=grouped_methods,
+            annos="01-0.10,01-0.20,01-0.50,01-1.00,03-1.00,05-1.00,10-1.00",
+            score_names=['kl', 'ece', 'macro_acc', 'macro_f1', 'input_consistency'],
+            value_normalization='absolute', x_axis='budget', y_axis='metric',
+            markers=[''])
+ ```
+ 
+ Here's an explanation of each parameter:
+
+  - report: It is an instance of the DCICReport class that contains the data to be analyzed.
+    "1_more_annotations-0": It is the name of the experiment or visualization.
+  - dataset=grouped_datasets: It specifies the dataset groups and selections. The variable - grouped_datasets likely contains a string with comma-separated values representing different groups and dots representing groupings within a group.
+  - method=grouped_methods: It specifies the method groups and selections. The variable grouped_methods likely contains a string with comma-separated values representing different groups and dots representing groupings within a group.
+  - annos="01-0.10,01-0.20,01-0.50,01-1.00,03-1.00,05-1.00,10-1.00": It specifies the annotation selections. The annotations are specified with two parts separated by a hyphen. The first part represents the number of annotations, and the second part represents a value.
+  - score_names=['kl', 'ece', 'macro_acc', 'macro_f1', 'input_consistency']: It is a list of score names to be analyzed and visualized.
+  - value_normalization='absolute': It specifies the type of value normalization to be used. In this case, the values will be normalized as absolute values.
+  - x_axis='budget': It specifies the data to be plotted on the x-axis. The x-axis will represent the budget.
+  - y_axis='metric': It specifies the data to be plotted on the y-axis. The y-axis will represent the metric.
+  - markers=['']: It is a list of markers to be used between different configurations on the y-axis. In this case, it seems that no markers are specified.
+  
+  [TODO] include default values
+ 
+ 
+ #### Interactive CLI
+
+The interactive CLI tool provided allows users to generate visualizations quickly and easily by specifying the desired parameters. Here's an explanation of how users can utilize this tool:
+
+1.  Launch the CLI tool: Run the script containing the provided code in a Python environment or IDE.
+
+2.  Define the visualization: The tool will prompt you to define the next visualization. Enter the required parameters in the following format: "name/dataset/method/annos/score_name/[Options]".
+    - Name: Provide a name for the visualization. This can be any descriptive name of your choice.
+    - Dataset: Specify the dataset(s) to include in the visualization. You can choose from predefined options such as "all," "grouped," "easy," or "diff." Alternatively, you can input your own dataset(s).
+    - Method: Select the method(s) to include in the visualization. Similar to datasets, you can choose from predefined options such as "ssl_methods," "self_methods," "noise_methods," etc. You can also input your own method(s).
+    -  Annos: Define the annotation(s) to include in the visualization. Options include "full," "supervised," or "semi." Alternatively, you can input your own annotation(s).
+        Score_name: Specify the score name to analyze and visualize.
+     -   Options (optional): Additional options can be provided to customize the visualization. These options should be provided as comma-separated key-value pairs, where each pair represents an optional parameter and its value. Available options include "value_normalization," "x_axis," "y_axis," "mean_stds," and "short." For example, "value_normalization=absolute,x_axis=budget,mean_stds=True."
+
+ 3. Generate the visualization: Once you have defined the visualization parameters, the tool will generate the corresponding visualization based on the provided inputs. The visualization will be displayed or saved, depending on the implementation of the create_plots function.
+
+4.  Repeat or abort: After generating a visualization, the tool will prompt you again to define the next visualization. You can repeat the process and define as many visualizations as needed. If you wish to exit the tool, simply enter "abort" when prompted.
+
+By using this interactive CLI tool, users can quickly explore and analyze different datasets, methods, annotations, and score names without modifying the underlying code. It provides a convenient and efficient way to generate visualizations for data analysis purposes.
 
 
-
- [TODO write documentation], give examples
 
 ### ViT Evaluation
 
