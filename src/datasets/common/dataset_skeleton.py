@@ -104,7 +104,7 @@ class DatasetSkeleton:
         assert os.path.exists(directory), f"No raw files found under {directory}"
         for i in range(5):
             files = os.listdir(join(directory, f"fold{i+1}"))
-            assert len(files) == self.number_images_per_fold[i], f"Wrong images given in fold {i+1}"
+            assert len(files) == self.number_images_per_fold[i], f"Wrong images given in fold {i+1}, found {len(files)}"
 
         # check if annotations are available
         assert os.path.exists(join(directory,"annotations.json")), f"No Annotations (annotations.json) available under {directory}"
@@ -137,7 +137,8 @@ class DatasetSkeleton:
         class_indices, counts = np.unique(targets,return_counts=True)
 
         for cl_index, c in zip(class_indices,counts):
-            assert c == self.number_images_per_class[cl_index]
+            assert c == self.number_images_per_class[cl_index], f"Mismatch between specified and found images per class," \
+                f" found {c}, specified{self.number_images_per_class[cl_index]}"
 
         channel_sum = np.zeros((3,))
         channel_squared_sum = np.zeros((3,))
