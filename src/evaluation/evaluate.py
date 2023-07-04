@@ -15,8 +15,7 @@ from src.util.cnn import get_model, make_ds_from
 from src.util.const import get_all_dataset_infos
 from src.util.json import DatasetDCICJson
 from src.util.mixed import get_all_dataset_files
-import wandb
-from ray import tune
+
 import tensorflow_addons as tfa
 FLAGS = flags.FLAGS
 
@@ -96,6 +95,7 @@ def evaluation_function(config, dcicReport=None):
     # setup wandb logging if desired
     try:
         if wandb_usage:
+            import wandb
             wandb_name = f"{file[:8]}-bs{batch_size}-lr{lr}-{network}-aug{config['augmentation']}-{str(weights)}-m{mode}-i{input_upsampling}-{opt}"
             run = wandb.init(project='benchmark-eval', name=wandb_name, config=config, tags=['benchmark'],
                              reinit=True)
@@ -270,6 +270,7 @@ def evaluation_function(config, dcicReport=None):
 
         if tuning:
             # save elements to ray tune
+            from ray import tune
             tune.report(kl=kl, macro_f1=f1,macro_acc=acc)
 
         if wandb_usage:
@@ -281,6 +282,7 @@ def evaluation_function(config, dcicReport=None):
 
         if tuning:
             # save elements to ray tune
+            from ray import tune
             tune.report(kl=99, macro_f1=-1,macro_acc=-1)
 
 
