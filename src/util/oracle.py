@@ -148,6 +148,56 @@ class AnnotationJson:
         self.anno_table : DataFrame = anno_table
         self.anno_json = anno_json
 
+    @classmethod
+    def from_pandas_table(cls, dataset_name, anno_table, user, id_to_filename_format="%s", set_name="generated"):
+        """
+
+        :param anno_table: filename x classes,
+        :param user:
+        :param id_to_filename_format: format string to convert the id to a file_name
+        :return:
+        """
+
+        # case 2: annotation table is provided
+        assert anno_table is not None
+        assert user is not None
+        # -> create an json list
+
+        print("convert annotation table to list")
+
+        ids = list(anno_table.index.values)
+        labels_for_dataset = list(anno_table.columns)
+
+        # cast table of annotations to a list of annotations per image, mind that not all images have the same number of annotations
+        all_annotations = []
+        now = datetime.datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
+        for id in tqdm(ids):
+
+            annotations_per_object = 0
+            for label in labels_for_dataset:
+                number_annotations = int(anno_table.loc[id, label])
+
+                for i in range(number_annotations):
+                    # index = i + annotations_per_object
+                    # annotations = all_annotations[index] if index in all_annotations else []
+                    all_annotations.append(
+                        {"image_path": id_to_filename_format % id, "class_label": label,
+                         "created_at": now})
+
+                    # all_annotations[index] = annotations
+
+                annotations_per_object += number_annotations
+
+        json_annotations = []
+        # for key in all_annotations:
+        name = "%s-%s" % (dataset_name, set_name)
+
+        json_anno = {"name": name, "user_mail": user, "annotation_time": 0.0, "dataset_name": dataset_name,
+                     "annotations": all_annotations}
+        json_annotations.append(json_anno)
+
+        return AnnotationJson(dataset_name, anno_table, json_annotations)
+
 
     @classmethod
     def from_file(cls, annotation_file, check_for_annominous=True):
