@@ -465,18 +465,16 @@ Overall, the script seems to be designed to analyze and visualize data using the
  
  Here's an explanation of each parameter:
 
-  - report: It is an instance of the DCICReport class that contains the data to be analyzed.
+  - `report`: It is an instance of the DCICReport class that contains the data to be analyzed.
     "1_more_annotations-0": It is the name of the experiment or visualization.
-  - dataset=grouped_datasets: It specifies the dataset groups and selections. The variable - grouped_datasets likely contains a string with comma-separated values representing different groups and dots representing groupings within a group.
-  - method=grouped_methods: It specifies the method groups and selections. The variable grouped_methods likely contains a string with comma-separated values representing different groups and dots representing groupings within a group.
-  - annos="01-0.10,01-0.20,01-0.50,01-1.00,03-1.00,05-1.00,10-1.00": It specifies the annotation selections. The annotations are specified with two parts separated by a hyphen. The first part represents the number of annotations, and the second part represents a value.
-  - score_names=['kl', 'ece', 'macro_acc', 'macro_f1', 'input_consistency']: It is a list of score names to be analyzed and visualized.
-  - value_normalization='absolute': It specifies the type of value normalization to be used. In this case, the values will be normalized as absolute values.
-  - x_axis='budget': It specifies the data to be plotted on the x-axis. The x-axis will represent the budget.
-  - y_axis='metric': It specifies the data to be plotted on the y-axis. The y-axis will represent the metric.
-  - markers=['']: It is a list of markers to be used between different configurations on the y-axis. In this case, it seems that no markers are specified.
-  
-  [TODO] include default values
+  - `dataset`: It specifies the dataset groups and selections. The variable - grouped_datasets contains a string with comma-separated values representing different groups and dots representing groupings within a group. A result will be calculated for each comma seperated groupd while the results will be aggregated for each dot seperated group.
+  - `method`: It specifies the method groups and selections. The variable grouped_methods  contains a string with comma-separated values representing different groups and dots representing groupings within a group. A result will be calculated for each comma seperated groupd while the results will be aggregated for each dot seperated group.
+  - `annos`: It specifies the annotation selections. The annotations are specified with two parts separated by a hyphen. The first part represents the number of annotations, and the second part represents the degree of supervision during the initialization.
+  - `score_names`: It is a list of score names to be analyzed and visualized Possible values: =['kl', 'ece', 'macro_acc', 'macro_f1', 'input_consistency', 'input_ece','input_kl','input_macro_acc', 'input_macro_f1']
+  - `value_normalization`: It specifies the type of value normalization to be used. In this case, the values will be normalized as absolute values.  Options are 'absolute' (absolute values), 'relative_baseline' (relative to baseline), and 'relative_anno' (relative to the first annotation). 
+  - `x_axis`: It specifies the data to be plotted on the x-axis.  Possible values are 'annos', 'dataset', 'method', or 'budget'.
+  - `y_axis`: It specifies the data to be plotted on the y-axis. Possible values are 'metric', 'dataset', or 'method'.
+  - `markers: It is a list of markers to be used between different configurations on the y-axis. If none are given the default values will be used.
  
  
  #### Interactive CLI
@@ -504,19 +502,40 @@ By using this interactive CLI tool, users can quickly explore and analyze differ
 ### ViT Evaluation
 
 The class `src/evaluation/vit.py` is a direct replacement for the normal evaluation script `src/evaluation/evaluate.py`.
-The difference is that instead of a tuned CNN per dataset a general Vision Transformer is used [TODO add reference].
-This evaluation was used in the CleverLABEL paper [TODO add ref] to illustrate the benefit of a more sophisticated backbone to handle issue like saturation from the CNN models while the input quality was getting better.
+The difference is that instead of a tuned CNN per dataset a general Vision Transformer is used.
+This evaluation was used in the CleverLABEL paper [https://arxiv.org/abs/2305.12811](https://arxiv.org/abs/2305.12811) to illustrate the benefit of a more sophisticated backbone to handle issue like saturation from the CNN models while the input quality was getting better.
 Due to the fact that it is a replacement, you can use all parameters and setups as before.
 The script will inlcude a `_vit` after the method name to highlight the different type of evaluation protocol.
 
 ### SPA + CleverLABEL
 
+The `SimulatedProposalAcceptance` class implements the proposed SPA and CleverLABL algorithm form [https://arxiv.org/abs/2305.12811](https://arxiv.org/abs/2305.12811).
 
-[TODO explain usage], give examples
+- Initialization: Create an instance of the SimulatedProposalAcceptance class by providing the raw_name as a parameter. Optionally, you can pass a report for tracking evaluation results.
+
+- Applying the Algorithm: Call the apply_algorithm method to execute the main algorithm. This method overrides the base class method and allows estimation based on the folder name. It iterates over slices, loads the proposed dataset, sets up the original dataset, initializes the oracle, retrieves initial annotations, and applies the main algorithm by calling the run method.
+
+- Running the Algorithm: The run method is responsible for executing the main algorithm. It iterates over the proposed dataset, processes each image, and updates the dataset with estimated distributions. It also prints debug information about the final budget and KL divergence. The algorithm's behavior is influenced by various global variables defined with FLAGS prefix, such as FLAGS.simulation_repetition, FLAGS.enable_annotate_unlabeled_data, FLAGS.blending_coefficient, and others.
+
+- Simulation of Proposal Acceptance: The simulate_proposal_acceptance method is used to simulate proposal acceptance. It takes the proposed class, oracle, simulation repetitions, path, and other parameters as input. This method applies the SPA (Simulated Proposal Acceptance) technique, which includes estimating proposal acceptance based on simulated probabilities, incorporating the blending coefficient (equivalent to μ in the paper), and optionally correcting with an offset (equivalent to δ for the CleverLabel part).
+
+Please cite as
+
+```
+@article{schmarje2023spa,
+author = {Schmarje, Lars and Grossmann, Vasco and Michels, Tim and Nazarenus, Jakob and Santarossa, Monty and Zelenka, Claudius and Koch, Reinhard},
+journal = {arXiv preprint arXiv:2305.12811},
+title = {{Label Smarter, Not Harder: CleverLabel for Faster Annotation of Ambiguous Image Classification with Higher Quality}},
+year = {2023}
+}
+
+}
+```
+
 
 ### Verse
 
-This is the implementation of the Verse Proposal Study presented in [TODO].
+This is the implementation of the Verse Proposal Study presented in [https://arxiv.org/abs/2306.12189](https://arxiv.org/abs/2306.12189).
 The method `vps.py` implemets the loading of different combinations of annotations from this study.
 The loaded results are then corrected with CleverLabel and used for the evaluation as common in the benchmark.
 The parameters of this method are `tags, blending_coefficient and dataset_coefficient`.
@@ -525,9 +544,22 @@ The last two are parameters from the CleverLabel paper and are explained in the 
 We provide 4 different setups:
 - `no_0to9` all valid annotations without proposals, this can be seen as the ground-truth and was used also to generate the ground-truth labels in the dataset
 - `dc3_0to9` all valid annotations with proposals, this is the main comparison with DC3 proposals
-- `dc3_0to2_6to9` all valid annotations with proposals (excluding the iteration with probabilistic overclustering proposals), this is a setup for comparison without this feature (see [TODO reference dis])
+- `dc3_0to2_6to9` all valid annotations with proposals (excluding the iteration with probabilistic overclustering proposals), this is a setup for comparison without this feature (see [TODO reference will be added on publication])
 - `dc3_neg2to9` all valid annotations with proposals (including the training annotations), the training annotations were often quite good and were just ruled out by the setup, however they can be used
 
 The proposals and the class distributions are given in the auxilary file `src/algorithms/vps_files/proposals.py`.
 
-[TODO] The data can be downloaded from [TODO] and is included in the automatic setup
+The data can be downloaded from [https://doi.org/10.5281/zenodo.7152309](https://doi.org/10.5281/zenodo.7152309) and is included in the automatic setup
+
+Please cite as
+
+```
+@article{schmarje2023vps,
+author = {Schmarje, Lars and Grossmann, Vasco and Zelenka, Claudius and Koch, Reinhard},
+journal = {arXiv preprint arXiv:2306.12189},
+title = {{Annotating Ambiguous Images: General Annotation Strategy for Image Classification with Real-World Biomedical Validation on Vertebral Fracture Diagnosis}},
+year = {2023}
+}
+
+}
+```

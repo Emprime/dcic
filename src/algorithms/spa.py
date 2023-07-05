@@ -136,6 +136,12 @@ class SimulatedProposalAcceptance(AlgorithmSkelton):
     """
 
     def __init__(self, raw_name, report=None):
+        """
+                Initializes an instance of the SimulatedProposalAcceptance class.
+
+                :param raw_name: The raw name of the proposal.
+                :param report: Optional report object to store results.
+        """
 
         self.raw_name = raw_name
         original_method = raw_name.split("-")[1]
@@ -152,9 +158,6 @@ class SimulatedProposalAcceptance(AlgorithmSkelton):
         if FLAGS.enable_inclusion_label:
             name += "_inc_lab"
 
-        if FLAGS.use_real_data:
-            assert FLAGS.real_data_directory != "INVALID", "Change the real data directory to [dc3_proposals, normal_proposals] if you want to use real data"
-            name += "_real_" + FLAGS.real_data_directory
 
         AlgorithmSkelton.__init__(self, name)
 
@@ -235,6 +238,36 @@ class SimulatedProposalAcceptance(AlgorithmSkelton):
         self.after_all_slices_processed(dataset_info.name, percentage_labeled, num_annos)
 
     def run(self, ds, oracle, dataset_info, v_fold,num_annos,percentage_labeled):
+        """
+        Runs the algorithm on a dataset.
+
+        1. It initializes various variables and retrieves dataset information.
+        2. It iterates over the proposed dataset, processing each image.
+        3. For each image:
+            - Retrieves the original split and predicted probabilities.
+            - Determines if unlabeled data should be annotated based on FLAGS.enable_annotate_unlabeled_data or the original split should be kept
+            - Simulates proposal acceptance using simulate_proposal_acceptance
+            - Updates the dataset with the estimated distribution.
+        4. Prints debug information about the final budget and KL divergence.
+        5. Returns the updated dataset.
+
+        Global variables starting with FLAGS that are used in this method include:
+
+        - FLAGS.simulation_repetition: Determines the number of simulation repetitions aka the number of simulated annotations per image
+        - FLAGS.enable_annotate_unlabeled_data: Controls whether unlabeled data should be annotated, otherwise simulation is only executed on previously labeled data during the initiliazation
+        - FLAGS.enable_offset_correction: Indicates whether offset correction should be applied. (called BC in paper)
+        - FLAGS.blending_coefficient: Controls the blending coefficient used in updating the dataset, called CB in paper and this parameter is mu
+        - FLAGS.enable_inclusion_label: Determines whether inclusion labels are enabled, it enhances the distribution with the given labels from the initilization
+
+        :param ds: The dataset to run the algorithm on.
+        :param oracle: The AnnotationOracle object for annotation management.
+        :param dataset_info: The information about the dataset like number of classes and class labels
+        :param v_fold: The fold index of the dataset.
+        :param num_annos: The number of annotations which were initialized
+        :param percentage_labeled: The percentage of labeled data which were initialized
+
+        :return: The modified dataset after running the algorithm.
+        """
 
 
 
@@ -326,6 +359,29 @@ class SimulatedProposalAcceptance(AlgorithmSkelton):
 
 
     def simulate_proposal_acceptance(self,proposed_class, oracle, simulation_repetitions,path,proposal_acceptance_offset,correct_with_offset=-1, ignore_costs=False, simulated_label = None):
+        """
+            Simulates the proposal acceptance process and returns the estimated distribution.
+
+            1. It retrieves the soft ground truth from the oracle.
+            2. If ignore_costs is false, it increases annotation count in the oracle.
+            3. It runs the simulation (SPA) multiple times:
+                - Selects a class for the proposal.
+                - Calculates the acceptance rate based on soft ground truth.
+                - Determines if the proposal is accepted or selects another class.
+                - Updates the simulated labels based on the simulation results.
+            4. It returns the simulated labels or applies corrections (BC in paper) if specified.
+
+            :param proposed_class: The proposed class for the simulation.
+            :param oracle: The AnnotationOracle object for annotation management.
+            :param simulation_repetitions: The number of simulation repetitions aka the number of simulated annotations
+            :param path: The path of the current image.
+            :param proposal_acceptance_offset: The offset value for proposal acceptance, delta in the paper for SPA
+            :param correct_with_offset: The offset value for correction. Default is -1, delta in the paper for CleverLabel
+            :param ignore_costs: Flag indicating whether to ignore annotation costs. Default is False.
+            :param simulated_label: A given label distribution to prevent the simulation and only correct and improve the resuls. Default is None.
+
+            :return: The estimated distribution after the simulation.
+            """
 
         if isinstance(proposed_class, list):
             # workaround if a probability distribution is given instead of only one class
