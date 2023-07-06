@@ -549,6 +549,8 @@ We provide 4 different setups:
 
 The proposals and the class distributions are given in the auxilary file `src/algorithms/vps_files/proposals.py`.
 
+The original split in training, validation and test is kept, thus no 5 folds are possible. For this reason all executions with these datasets should only be executed on `v_fold 3`.
+
 The data can be downloaded from [https://doi.org/10.5281/zenodo.7152309](https://doi.org/10.5281/zenodo.7152309) and is included in the automatic setup
 
 Please cite as

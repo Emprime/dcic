@@ -459,9 +459,10 @@ class AnnotationJson:
                   'w') as outfile:
             json.dump(self.anno_json, outfile)
 
-    def get_probability_data(self):
+    def get_probability_data(self, return_numbers=False):
         """
         get the probabilites form the underlying dataframe, and the classes, names
+        :param return_numbers: return the absolute numbers  instead of the propbability data
         :return:
         """
 
@@ -473,7 +474,8 @@ class AnnotationJson:
         imgs = list(self.anno_table.index.values)
         data = self.anno_table.to_numpy()
 
-        data = data / data.sum(axis=1, keepdims=True)  # cast to probs
+        if not return_numbers:
+            data = data / data.sum(axis=1, keepdims=True)  # cast to probs
 
         return imgs, classes, data
 

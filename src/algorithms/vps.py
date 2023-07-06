@@ -12,7 +12,7 @@ from src.util.oracle import AnnotationJson
 
 FLAGS = flags.FLAGS
 flags.DEFINE_list(name='tags',
-                  help='tDefines the tags which should be checked for the loaded annotations', default=[])
+                  help='Defines the tags which should be checked for the loaded annotations', default=[])
 
 flags.DEFINE_float(name='dataset_coefficient', help="Enables the corrections based on the cleverlabel paper, called delta in paper, 0.1 is default and 0 meanse deactivated", default=0.1)
 flags.DEFINE_float(name='blending_coefficient', help="Blending of the proposals and the estimated class distribution, called mu in the paper, 1 means only proposals (ingoring the simulation), 0 means only distribution, -1 means deactivated", default=0.75)
@@ -33,7 +33,7 @@ class VPSImport(AlgorithmSkelton):
             :param oracle:
             :param dataset_info:
             :param v_fold:
-            :param num_annos:
+            :param num_annos: number of used annotations, -10 means all annotations without sampling
             :param percentage_labeled: ignored in this implmentation, maybe use as proxy for repetitions
             :return:
             """
@@ -61,7 +61,7 @@ class VPSImport(AlgorithmSkelton):
             # manual saving of configurations
             annotations.save_json_list("src/algorithms/vps_files")
 
-        imgs, classes, data = annotations.get_probability_data()
+        imgs, classes, data = annotations.get_probability_data(return_numbers=True)
 
         # rearrange classes to be equal to dataset info classes
         data = data.transpose()
@@ -75,7 +75,7 @@ class VPSImport(AlgorithmSkelton):
             id = id[0] + "-" + id[1]
 
             # get distribution of annotations
-            distribution = data[i]
+            distribution = data[i] / np.sum(data[i])
 
             verbose = False
 
@@ -86,11 +86,19 @@ class VPSImport(AlgorithmSkelton):
                 print("Vps distribution, ", distribution)
 
 
+
             #sample from this distribution as specified
             anno = np.zeros((len(distribution)))
-            labels = self.r.choices(range(len(distribution)), weights=distribution, k=num_annos)
-            for l in labels:
-                anno[l] += 1
+            if num_annos > 0:
+                labels = self.r.choices(range(len(distribution)), weights=distribution, k=num_annos)
+                for l in labels:
+                    anno[l] += 1
+            elif num_annos == -10:
+                # use all annotations
+                anno = data[i]
+
+            used_num_annos = np.sum(anno)
+
             calculated_distribution =  anno / np.sum(anno)
 
             if verbose:
@@ -98,7 +106,7 @@ class VPSImport(AlgorithmSkelton):
 
             # maybe correct it
             if FLAGS.dataset_coefficient > 0:
-                calculated_distribution = bias_correction(anno,FLAGS.dataset_coefficient,num_annos,proposals[id])
+                calculated_distribution = bias_correction(anno,FLAGS.dataset_coefficient,used_num_annos,proposals[id])
 
             if verbose:
                 print("corrected distribution: ", calculated_distribution)
@@ -108,7 +116,7 @@ class VPSImport(AlgorithmSkelton):
                 t = FLAGS.blending_coefficient
                 calculated_distribution = t * (calculated_distribution) +\
                                           (1 - t) * class_blending[
-                                              np.argmax(calculated_distribution) if num_annos > 0 else proposals[id]
+                                              np.argmax(calculated_distribution) if used_num_annos > 0 else proposals[id]
                                           ]
 
             if verbose:
@@ -117,6 +125,7 @@ class VPSImport(AlgorithmSkelton):
             split = ds.get(id, 'original_split')  # determine original split before move to unlabeled
             ds.update_image(id, split, list(calculated_distribution)) # inherentily casts to identifier
 
+     
         return ds
 
 
