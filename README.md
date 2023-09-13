@@ -1,4 +1,4 @@
-# Data-Centric Benchmark
+# Joined Repo Data-Centric Benchmark and Follow-up
 
 This is the official repo of the Data-Centric Image Classification (DCIC) Benchmark.
 The original paper can be found [here](https://proceedings.neurips.cc/paper_files/paper/2022/file/d6c03035b8bc551f474f040fe8607cab-Paper-Datasets_and_Benchmarks.pdf).
