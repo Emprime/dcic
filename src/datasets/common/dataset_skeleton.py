@@ -22,7 +22,7 @@ flags.DEFINE_string(name='evaluate_folder', default="evaluate_datasets",
 hyper_parameters = {
     'Benthic': {'weights': 'imagenet', 'kl': '0.7382', 'macro_f1': '0.6572', 'macro_acc': '0.6487', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.0, 'network': 'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdw', 'input_upsampling': False, 'weight_decay': 0.001},
     'CIFAR10H': {'weights': 'imagenet', 'kl': '0.4270', 'macro_f1': '0.9004', 'macro_acc': '0.9007', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.0, 'network': 'resnet50v2', 'augmentation': 0, 'opt': 'sgdwr', 'input_upsampling': True, 'weight_decay': 0.0005},
-    'MiceBone': {'weights': 'imagenet', 'kl': '0.2927', 'macro_f1': '0.6469', 'macro_acc': '0.6607', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.0, 'network': 'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdwr', 'input_upsampling': True, 'weight_decay': 0.001},
+    'MiceBone': {'weights': 'imagenet', 'kl': '0.2927', 'macro_f1': '0.6469', 'macro_acc': '0.6607', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.0, 'network': 'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdwr', 'input_upsampling': False, 'weight_decay': 0.001},
     'Pig' : {'weights': 'imagenet', 'kl': '0.4744', 'macro_f1': '0.4464', 'macro_acc': '0.4544', 'lr': 0.1, 'batch_size': 128, 'dropout': 0.5, 'network':
         'resnet50v2_large', 'augmentation': 1, 'opt': 'sgdw', 'input_upsampling': False, 'weight_decay': 0.0005},
     'Plankton': {'weights': 'imagenet', 'kl': '0.2466', 'macro_f1': '0.8992', 'macro_acc': '0.9183', 'lr': 1e-05, 'batch_size': 128, 'dropout': 0.0, 'network': 'incepresv2', 'augmentation': 1, 'opt': 'adam', 'input_upsampling': True, 'weight_decay': 0.001},
