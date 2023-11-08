@@ -26,3 +26,6 @@ def get_all_dataset_infos():
         'verse_blended-vps' : VerseBlended(FLAGS.data_root), 'verse_mask1-vps': VerseMask(FLAGS.data_root)
             }
 
+def get_lite_dataset_infos():
+    valid_datasets = ['Benthic','MiceBone','QualityMRI','Treeversity#6','Turkey']
+    return {k:v for k,v in get_all_dataset_infos().items() if k in valid_datasets}
