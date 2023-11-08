@@ -27,5 +27,5 @@ def get_all_dataset_infos():
             }
 
 def get_lite_dataset_infos():
-    valid_datasets = ['Benthic','MiceBone','QualityMRI','Treeversity#6','Turkey']
+    valid_datasets = ['Benthic','MiceBone','QualityMRI','Treeversity#6']
     return {k:v for k,v in get_all_dataset_infos().items() if k in valid_datasets}
