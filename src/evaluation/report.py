@@ -34,6 +34,8 @@ class DCICReport:
         self.cs['w_budget'] = []
         self.cl = None
 
+        self.show_score_names = ['kl','input_kl','budget','macro_acc','input_macro_acc']
+
     def ece(self,y_true, y_pred, num_bins=10):
         """
         Implementation inspired by https://lars76.github.io/2020/08/07/metrics-for-uncertainty-estimation.html
@@ -273,7 +275,7 @@ class DCICReport:
                         consistency_matrix[i, i] = 1
                         ignore_unknown_consistency_matrix[i, i] = 1
 
-            if verbose > 0:
+            if verbose > 4:
                 print("Consistency matrix of input")
                 print(consistency_matrix)
                 print("Consistency matrix of input (igoring unknown class)")
@@ -301,7 +303,8 @@ class DCICReport:
         if verbose > 0:
             print(f"###### {experiment} with mode {mode} ########")
             print("################ Scores ####################")
-            for k, v in self.cs.items():
+            for k in self.show_score_names:
+                v = self.cs[k]
                 values = self._calculate_values_from_scores(k,v, verbose)
 
                 print("%s: %0.04f +- %0.04f" % (k, np.mean(values), np.std(values)))
@@ -322,7 +325,7 @@ class DCICReport:
         # create header
         first_padding = 25
         padding = 19
-        keys = self.cs.keys()
+        keys = self.show_score_names
         result_table = "Experiment".ljust(first_padding)
         for k in keys:
             result_table +=  " | " + k.ljust(padding)
@@ -336,7 +339,8 @@ class DCICReport:
         for experiment, cs in self.scores.items():
             # print(experiment)
             result_table += experiment.ljust(first_padding)
-            for k,v in cs.items():
+            for k in self.show_score_names:
+                v = cs[k]
                 # print(k,v)
                 values = self._calculate_values_from_scores(k,v,verbose=0)
                 # print(values)
