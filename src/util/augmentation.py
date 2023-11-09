@@ -30,6 +30,10 @@ class Augmenter():
         self.prob_zoom = prob_zoom
         self.use_imgaug = use_imgaug
 
+        # set seed
+        tf.random.set_seed(424242)
+
+
 
     def flip(self, x: tf.Tensor) -> tf.Tensor:
         """Flip augmentation
