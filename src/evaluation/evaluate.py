@@ -93,7 +93,7 @@ def evaluation_function(config, dcicReport=None):
 
     # set fixed seed for evlauation
     tf.random.set_seed(424242)
-    tf.keras.utils.set_random_seed(1)
+    tf.keras.utils.set_random_seed(4242)
     tf.config.experimental.enable_op_determinism()
 
 
