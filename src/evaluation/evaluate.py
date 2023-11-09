@@ -91,6 +91,8 @@ def evaluation_function(config, dcicReport=None):
 
     dcicReport = DCICReport() if dcicReport is None else dcicReport # create reporter if not given
 
+    # set fixed seed for evlauation
+    tf.random.set_seed(424242)
 
     # setup wandb logging if desired
     try:
