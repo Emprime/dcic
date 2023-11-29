@@ -19,9 +19,10 @@ class No_algorithm(AlgorithmSkelton):
 
 
         # reiterate over all elements and reassign them the desired value
+        print(len(paths))
         for i, path in enumerate(paths):
             if i < 10:
-                print(ds.get(path, 'soft_gt'))
+                print(path, ds.get(path, 'soft_gt'))
         return ds
 
 def main(argv):
