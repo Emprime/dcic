@@ -210,11 +210,14 @@ class DatasetSkeleton:
                         soft_gt = []
                     datasetDCIC.add_image(file_name, fold_assignments[i], soft_gt)
 
+                    if j < 10:
+                      print(soft_gt)
+
             # normalize distributions
             if np.sum(class_distributions) > 0 and v_fold == 1: # report only if entries are available and only once
                 # print(class_distributions / np.sum(class_distributions, axis=1, keepdims=True))
                 class_distributions /= np.sum(class_distributions, axis=1, keepdims=True)
-                # print(class_distributions)
+                print(class_distributions)
                 if np.any(np.abs(class_distributions-np.mean(class_distributions,axis=0,keepdims=True)) > 0.05):
                     print(f"WARNING: Relative distributions between folds is skewed! More than 5% deviation from the mean per classs. "
                           f"Details (row folds, columns averaged elements per fold)\n{class_distributions}")
