@@ -14,6 +14,14 @@ class No_algorithm(AlgorithmSkelton):
         self.mode = 'soft'
 
     def run(self, ds, oracle, dataset_info, v_fold,num_annos,percentage_labeled):
+
+        paths, targets = ds.get_training_subsets('all')
+
+
+        # reiterate over all elements and reassign them the desired value
+        for i, path in enumerate(paths):
+            if i < 10:
+                print(ds.get(path, 'soft_gt'))
         return ds
 
 def main(argv):
