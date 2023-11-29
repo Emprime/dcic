@@ -211,7 +211,7 @@ class DatasetSkeleton:
                     datasetDCIC.add_image(file_name, fold_assignments[i], soft_gt)
 
                     if j < 10:
-                      print(soft_gt)
+                      print(file_name,soft_gt)
 
             # normalize distributions
             if np.sum(class_distributions) > 0 and v_fold == 1: # report only if entries are available and only once
