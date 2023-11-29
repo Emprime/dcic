@@ -92,8 +92,8 @@ def evaluation_function(config, dcicReport=None):
     dcicReport = DCICReport() if dcicReport is None else dcicReport # create reporter if not given
 
     # set fixed seed for evlauation
-    tf.random.set_seed(424242)
-    tf.keras.utils.set_random_seed(4242)
+    tf.random.set_seed(4242)
+    tf.keras.utils.set_random_seed(422)
     tf.config.experimental.enable_op_determinism()
 
 
