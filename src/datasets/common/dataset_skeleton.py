@@ -199,6 +199,7 @@ class DatasetSkeleton:
                 fold_folder = join(self.raw_data_directory, "fold%d" % (i + 1))
 
                 files = os.listdir(fold_folder)
+                files = sorted(files)
 
                 for j, file in tqdm(enumerate(files)):
 
