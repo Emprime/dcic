@@ -142,7 +142,7 @@ We provide several baselines as example and comparison which are all described i
 Notes:
 - `no_algorithm.py` use only initial annotations and thus can be used as a baseline
 - `pseudo_label.py` trains a ResNet50v2 on the provided labeled data and predict the labels of all other labels. It is called Pseudo v2 in the paper and its variants can be addressed via command line arguments
-- MeanTeacher, Pi Model, Fixmatch and Pseudolabel v1 (+ S2C2) were executed based on the original authors source code (TODO: Insert currently unpublished Link, Under Review). You can import the generated predictions as described below.
+- MeanTeacher, Pi Model, Fixmatch and Pseudolabel v1 (+ DC3) were executed based on the original authors source code ([Source code](https://github.com/Emprime/dc3)). You can import the generated predictions as described below.
 
 
 ```
