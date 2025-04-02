@@ -203,18 +203,17 @@ def evaluation_function(config, dcicReport=None):
             decay_steps = int(epochs * len(gt_train) / batch_size)
 
             if opt == "sgdwr":
-                learning_rate_fn = tf.keras.optimizers.schedules.CosineDecayRestarts(lr, first_decay_steps=decay_steps // 5)
+                learning_rate_fn = tf.keras.optimizers.schedules.CosineDecayRestarts(
+                    initial_learning_rate=lr,
+                    first_decay_steps=decay_steps // 5
+                )
             else:
-                learning_rate_fn = tf.keras.optimizers.schedules.CosineDecay(lr, decay_steps=decay_steps)
-            # optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate_fn, momentum=0.9, nesterov=False)
-
-            # =optimizers.RMSprop(learning_rate=2e-5)
-
-            step = tf.Variable(0, trainable=False)
-
-            # lr and wd can be a function or a tensor
-            learning_rate = lr * learning_rate_fn(step)
-            wd = lambda: weight_decay * learning_rate_fn(step)
+                learning_rate_fn = tf.keras.optimizers.schedules.CosineDecay(
+                    initial_learning_rate=lr,
+                    decay_steps=decay_steps
+                )
+            # weight decay can be a float or a callable / schedule:
+            wd = weight_decay  # or a function/schedule, if needed
 
             if opt == "sgdw" or opt == "sgdwr":
                 optimizer = tf.keras.optimizers.SGD(
