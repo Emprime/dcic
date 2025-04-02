@@ -217,9 +217,9 @@ def evaluation_function(config, dcicReport=None):
 
             if opt == "sgdw" or opt == "sgdwr":
                 optimizer = tf.keras.optimizers.SGD(
-                    learning_rate=learning_rate, weight_decay=wd, momentum=0.9)
+                    learning_rate=learning_rate_fn, weight_decay=wd, momentum=0.9)
             elif opt == "sgd":
-                optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=0.9)
+                optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate_fn, momentum=0.9)
             elif opt == "adam":
                 optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
 
