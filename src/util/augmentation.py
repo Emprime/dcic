@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.keras.applications import imagenet_utils
-from imgaug import augmenters as iaa
+#from imgaug import augmenters as iaa
 
 
 # content motivated and partially copied from https://www.wouterbulten.nl/blog/tech/data-augmentation-using-tensorflow-data-dataset/
@@ -119,6 +119,8 @@ class Augmenter():
         return zoom
 
     def imgaug(self, images):
+        # ImgAug might not be combatible anymore with framework
+        from imgaug import augmenters as iaa 
         augmenter = iaa.Sequential([
             # iaa.CropToFixedSize(width=target_size[0], height=target_size[1], position="uniform"),
             iaa.Fliplr(0.5),
