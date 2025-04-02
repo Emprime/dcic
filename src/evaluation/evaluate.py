@@ -213,17 +213,17 @@ def evaluation_function(config, dcicReport=None):
                     decay_steps=decay_steps
                 )
             
-            def lr_fn(step):
-                return lr * base_lr_schedule(step)
-            
-            def wd_fn(step):
-                return weight_decay * base_lr_schedule(step)
+            step = tf.Variable(0, trainable=False)
+
+            # lr and wd can be a function or a tensor
+            learning_rate = lambda: lr * learning_rate_fn(step)
+            wd = lambda: weight_decay * learning_rate_fn(step)
 
             if opt == "sgdw" or opt == "sgdwr":
                 optimizer = tf.keras.optimizers.SGD(
-                    learning_rate=lr_fn, weight_decay=wd_fn, momentum=0.9)
+                    learning_rate=learning_rate, weight_decay=wd, momentum=0.9)
             elif opt == "sgd":
-                optimizer = tf.keras.optimizers.SGD(learning_rate=lr_fn, momentum=0.9)
+                optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=0.9)
             elif opt == "adam":
                 optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
 
