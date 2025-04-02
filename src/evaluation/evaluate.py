@@ -203,12 +203,12 @@ def evaluation_function(config, dcicReport=None):
             decay_steps = int(epochs * len(gt_train) / batch_size)
 
             if opt == "sgdwr":
-                base_lr_schedule = tf.keras.optimizers.schedules.CosineDecayRestarts(
+                learning_rate_fn = tf.keras.optimizers.schedules.CosineDecayRestarts(
                     initial_learning_rate=1.0,  # We'll multiply below
                     first_decay_steps=decay_steps // 5
                 )
             else:
-                base_lr_schedule = tf.keras.optimizers.schedules.CosineDecay(
+                learning_rate_fn = tf.keras.optimizers.schedules.CosineDecay(
                     initial_learning_rate=1.0,  # We'll multiply below
                     decay_steps=decay_steps
                 )
