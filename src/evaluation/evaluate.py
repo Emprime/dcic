@@ -203,23 +203,27 @@ def evaluation_function(config, dcicReport=None):
             decay_steps = int(epochs * len(gt_train) / batch_size)
 
             if opt == "sgdwr":
-                learning_rate_fn = tf.keras.optimizers.schedules.CosineDecayRestarts(
-                    initial_learning_rate=lr,
+                base_lr_schedule = tf.keras.optimizers.schedules.CosineDecayRestarts(
+                    initial_learning_rate=1.0,  # We'll multiply below
                     first_decay_steps=decay_steps // 5
                 )
             else:
-                learning_rate_fn = tf.keras.optimizers.schedules.CosineDecay(
-                    initial_learning_rate=lr,
+                base_lr_schedule = tf.keras.optimizers.schedules.CosineDecay(
+                    initial_learning_rate=1.0,  # We'll multiply below
                     decay_steps=decay_steps
                 )
-            # weight decay can be a float or a callable / schedule:
-            wd = weight_decay  # or a function/schedule, if needed
+            
+            def lr_fn(step):
+                return lr * base_lr_schedule(step)
+            
+            def wd_fn(step):
+                return weight_decay * base_lr_schedule(step)
 
             if opt == "sgdw" or opt == "sgdwr":
                 optimizer = tf.keras.optimizers.SGD(
-                    learning_rate=learning_rate_fn, weight_decay=wd, momentum=0.9)
+                    learning_rate=lr_fn, weight_decay=wd_fn, momentum=0.9)
             elif opt == "sgd":
-                optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate_fn, momentum=0.9)
+                optimizer = tf.keras.optimizers.SGD(learning_rate=lr_fn, momentum=0.9)
             elif opt == "adam":
                 optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
 
