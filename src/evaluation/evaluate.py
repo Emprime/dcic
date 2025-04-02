@@ -204,26 +204,29 @@ def evaluation_function(config, dcicReport=None):
 
             if opt == "sgdwr":
                 learning_rate_fn = tf.keras.optimizers.schedules.CosineDecayRestarts(
-                    initial_learning_rate=1.0,  # We'll multiply below
+                    initial_learning_rate=lr,
                     first_decay_steps=decay_steps // 5
                 )
             else:
                 learning_rate_fn = tf.keras.optimizers.schedules.CosineDecay(
-                    initial_learning_rate=1.0,  # We'll multiply below
+                    initial_learning_rate=lr,
                     decay_steps=decay_steps
                 )
             
-            step = tf.Variable(0, trainable=False)
-
-            # lr and wd can be a function or a tensor
-            learning_rate = lambda: lr * learning_rate_fn(step)
-            wd = lambda: weight_decay * learning_rate_fn(step)
+            # weight decay can be a float or a callable / schedule:
+            wd = weight_decay  # or a function/schedule, if needed
+            
+            optimizer = tf.keras.optimizers.SGD(
+                learning_rate=learning_rate_fn,
+                weight_decay=wd,
+                momentum=0.9
+            )
 
             if opt == "sgdw" or opt == "sgdwr":
                 optimizer = tf.keras.optimizers.SGD(
-                    learning_rate=learning_rate, weight_decay=wd, momentum=0.9)
+                    learning_rate=learning_rate_fn, weight_decay=wd, momentum=0.9)
             elif opt == "sgd":
-                optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=0.9)
+                optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate_fn, momentum=0.9)
             elif opt == "adam":
                 optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
 
