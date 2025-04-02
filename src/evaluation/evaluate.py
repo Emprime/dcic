@@ -16,7 +16,6 @@ from src.util.const import get_all_dataset_infos
 from src.util.json import DatasetDCICJson
 from src.util.mixed import get_all_dataset_files
 
-import tensorflow_addons as tfa
 FLAGS = flags.FLAGS
 
 
@@ -218,7 +217,7 @@ def evaluation_function(config, dcicReport=None):
             wd = lambda: weight_decay * learning_rate_fn(step)
 
             if opt == "sgdw" or opt == "sgdwr":
-                optimizer = tfa.optimizers.SGDW(
+                optimizer = tf.keras.optimizers.SGD(
                     learning_rate=learning_rate, weight_decay=wd, momentum=0.9)
             elif opt == "sgd":
                 optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=0.9)
