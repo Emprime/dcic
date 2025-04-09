@@ -37,7 +37,7 @@ hyper_parameters = {
 
 
 default_parameters = {
-    'batch_size':32, 'lr':1e-4, 'weights':'imagenet', 'dropout':0.5, 'network':'resnet50v2', 'augmentation':1, 'opt': 'sgdw', 'input_upsampling':True, 'weight_decay': 0.0005,
+    'batch_size':32, 'lr':1e-4, 'weights':'imagenet', 'dropout':0.5, 'network':'resnet50v2', 'augmentation':1, 'opt': 'adam', 'input_upsampling':True, 'weight_decay': 0.0005,
 }
 
 class DatasetSkeleton:
